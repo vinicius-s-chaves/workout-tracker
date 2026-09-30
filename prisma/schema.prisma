@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum MuscleGroup {
+  CHEST
+  BACK
+  SHOULDERS
+  BICEPS
+  TRICEPS
+  ABS
+  QUADRICEPS
+  HAMSTRINGS
+  GLUTES
+  CALFS
+}
+
+model Exercise {
+  id          String                @id @default(uuid())
+  name        String
+  muscleGroup MuscleGroup[]
+  workouts    ExercisesOnWorkouts[]
+
+  @@map("exercices")
+}
+
+model Workout {
+  id        String                @id @default(uuid())
+  name      String
+  exercices ExercisesOnWorkouts[]
+
+  @@map("workouts")
+}
+
+model ExercisesOnWorkouts {
+  exercice   Exercise @relation(fields: [exerciceId], references: [id])
+  exerciceId String
+  workout    Workout  @relation(fields: [workoutId], references: [id])
+  workoutId  String
+  series     Int      @default(1)
+  reps       Int      @default(0)
+  weight     Float    @default(0)
+
+  @@id([exerciceId, workoutId])
+}
